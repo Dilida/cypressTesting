@@ -1,0 +1,10 @@
+{
+    "baseUrl": "http://lb.88bccp.com",
+    "env": {
+        "target": "/pc"
+    },
+    "viewportHeight" : 800,
+    "viewportWidth" : 1280,
+    "pageLoadTimeout": 180000,
+    "responseTimeout": 180000
+}

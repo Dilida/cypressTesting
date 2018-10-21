@@ -1,0 +1,13 @@
+{
+    "scripts": {
+        "cypress:run": "cypress run",
+        "cypress:open": "cypress open",
+        "cy": "cypress open --env configFile=blcMobile",
+        "cyBlc": "cypress open --env configFile=blc",
+        "cySsc": "cypress open --env configFile=ssc",
+        "pcHome": "cypress run --spec 'cypress/integration/testingPc/*'"
+    },
+    "dependencies": {
+        "cypress": "^3.1.0"
+    }
+}

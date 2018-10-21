@@ -1,0 +1,10 @@
+{
+    "baseUrl": "http://blc.baochi888.com",
+    "env": {
+        "target": "/pc"
+    },
+    "viewportHeight" : 800,
+    "viewportWidth" : 1280,
+    "pageLoadTimeout": 120000,
+    "requestTimeout": 10000
+}
