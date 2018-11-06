@@ -4,11 +4,8 @@ import {
 } from '../support/utility.js'
 import {
   getBetMaxCount,
-} from '../support/utility.mobile.js'
+} from '../support/mobileUtility.js'
 
-Cypress.Commands.add('visitPage', (obj) => {
-    cy.visit(Cypress.env("target"), obj);
-})
 Cypress.Commands.add('apiRoute', () => {
   cy.server();
   cy.route('/forseti/api/pay/receiptClient').as('payWay');
@@ -40,23 +37,6 @@ Cypress.Commands.add('apiRoute', () => {
   cy.route('POST', '/uaa/apid/member/testLogin').as('testLogin');
   cy.route('POST', '/forseti/api/orders/betOrder').as('betOrder');
 });
-Cypress.Commands.add('demoLogin', () => {
-  cy.get(':nth-child(3) > .q-btn-inner > div').as('DemoPlay')
-    .click(); // .wait(1000);
-  cy.wait(['@testLogin']).then((response) => {
-    expect(response.response.body.err).to.eq("SUCCESS"); //遊客登入成功
-    const data = Cypress._.extend( response.response.body.data, {
-      loginTime: new Date().getTime()
-    })
-    cy.writeFile('cypress/fixtures/mobileDemoLogin.json', data);
-  });
-  // 弹窗提示
-  cy.get('.modal-auto__body__content').as('autoDialog')
-    .should('be.visible').contains('登录成功');
-  cy.getCookie('access_token').should('have.property', 'value');
-  cy.getCookie('acType').should('have.property', 'value', '2');
-  cy.get('.modal-footer').should('be.not.visible');
-})
 
 Cypress.Commands.add('openLotteryPage', (cid) => {
   const baseUrl = Cypress.config('baseUrl');
@@ -88,9 +68,6 @@ Cypress.Commands.add('userLogin', () => {
   cy.getCookie('username').should('have.property', 'value', accountName);
   cy.getCookie('access_token').should('have.property', 'value');
   cy.getCookie('acType').should('have.property', 'value', '1');
-})
-Cypress.Commands.add('visitPage', (obj) => {
-  cy.visit(Cypress.env("target"), obj);
 })
 
 Cypress.Commands.add('checkCountdown', (nowIssueAlias) => {
@@ -141,7 +118,7 @@ Cypress.Commands.add('randomBetClick', (maxBetCount = 0) => {
   cy.get('.play-tree__block__list').find('.bet-item').filter('div')
   .then(($el) => {
     if (maxBetCount == 0) {
-      maxBetCount = Cypress._.random(3, 10);
+      maxBetCount = Cypress._.random(3, 5);
     }
     const randomRange = Cypress._.sampleSize(Cypress._.range($el.length), maxBetCount);
     randomRange.forEach((i) => {
@@ -197,3 +174,107 @@ Cypress.Commands.add('randomBet', (kindsLabel, maxBet = 0) => {
   cy.randomBetClick(maxBet);
   cy.betOrder();
 });
+
+/*====== 20181031 add from Dilida =====*/
+
+Cypress.Commands.add('demoLogin', () => {
+  // 试玩登录
+  // cy.checkRoutePageUrl('');
+  cy.get(':nth-child(3) > .q-btn-inner > div').as('DemoPlay')
+    .click(); // .wait(1000);
+  cy.wait(['@testLogin']).then(() => {
+    // 弹窗提示
+    cy.get('.modal-auto__body__content').as('autoDialog')
+      .should('be.visible').contains('登录成功');
+    cy.getCookie('access_token').should('have.property', 'value');
+    cy.getCookie('acType').should('have.property', 'value', '2');
+    cy.get('.modal-footer').should('be.not.visible');
+  });
+})
+
+Cypress.Commands.add('logout', () => {
+  // ready go logout and see the leftside slide in
+  cy.get('.q-toolbar > .q-btn > .q-btn-inner > .q-icon').click()
+    .get('.q-layout-drawer > .q-list').should('be.visible')
+    .get('.lobby-left-drawer__btn-group > .q-btn > .q-btn-inner').click()
+  cy.wait('@logOut').then((response) => {
+    const {err} = response.response.body;
+    assert.isNotNull(err,'is not null');
+    cy.get('.modal-auto__body__content').as('autoDialog')
+    .should('be.visible').contains('注销成功');
+  })
+})
+
+Cypress.Commands.add('checkRoutePageUrl', (url, title = false)  => {
+  cy.url().should('contain', `${Cypress.config().baseUrl}${url}`);
+  if (title) {
+    cy.get('.q-toolbar').should('contain', title);
+  }
+})
+
+Cypress.Commands.add('demoLogintoLottery', (lotteryId, lotteryPage) => {
+  cy.visit(Cypress.env("target"));
+  cy.demoLogin();
+  cy.lotteryPageRoute();
+  cy.visit(lotteryPage.url);
+  cy.getCookie('lotteryId').should('have.property','value', lotteryId.toString());
+})
+
+Cypress.Commands.add('lotteryPageRoute', () => {
+  cy.server();
+  cy.route('GET','/forseti/api/priodDataNewly?lotteryId=*').as('priodDateNewly');
+})
+
+Cypress.Commands.add('lotteryHeaderFunc', (lotteryHeader) => {
+  cy.get('.lottery-top__priod-code__code').contains(lotteryHeader[2].pcode);
+  cy.get('.lottery-countdown__code').contains(lotteryHeader[1].pcode);
+  cy.get('.past-view-ball > .q-list').contains(lotteryHeader[2].winNumber.split(',')[0]);
+})
+
+Cypress.Commands.add('confirmTabList', (tabList) => {
+  tabList.forEach((label,index) => {
+    cy.get(`.scroll > .q-list > :nth-child(${index+1})`).contains(label);
+  });
+})
+
+Cypress.Commands.add('checkLotteryRecord', () => {
+  cy.get('.q-mr-sm').click()
+    .get('.q-popover > .q-list').should('be.visible')
+    .get('.q-popover > .q-list').contains('投注记录').click()
+  cy.url().should('include','betRecord')
+    .wait('@orderList').then( (response)=> {
+      const orderDataLength = response.response.body.data.total
+      cy.get('.q-collapsible-sub-item > .q-list > div').should('have.length', orderDataLength);
+    })
+})
+
+Cypress.Commands.add('showLotteryInfo', (lotteryName) => {
+  cy.get('.q-mr-sm').click()
+    .get('.q-popover > .q-list').should('be.visible')
+    .get('.q-popover > .q-list').contains('玩法说明').click()
+  cy.get('.modal-header').contains(lotteryName)
+    .get('.modal-footer > .q-btn > .q-btn-inner').click();
+})
+
+Cypress.Commands.add('moreLotteryHistory', (lotteryName) => {
+  cy.get('.q-mr-sm').click()
+    .get('.q-popover > .q-list').should('be.visible')
+    .get('.q-popover > .q-list').contains('往期开奖').click()
+  cy.url().should('contain', 'pastView')
+  cy.get('.q-toolbar-title').contains(lotteryName).go(-1);
+})
+
+Cypress.Commands.add('lotteryLoadBeadFunc', (lotteryLoadBead, doubleLong) => {
+  if(!lotteryLoadBead){
+    cy.get('.q-mr-sm').click()
+      .get('.q-popover > .q-list').should('be.visible')
+      .get('.q-popover > .q-list').contains('路珠').click();
+    cy.url().should('contain', 'roadBeads').go(-1)
+  }
+  if(!doubleLong){
+    cy.get('.q-mr-sm').click()
+      .get('.q-popover > .q-list').should('be.visible')
+      .get('.q-popover > .q-list').contains('双面长龙').click()
+    cy.url().should('contain', 'dsLong');
+  }
+})

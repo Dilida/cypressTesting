@@ -1,0 +1,13 @@
+{
+    "baseUrl": "http://ssc.66bccp.com",
+    "env": {
+        "target": "/pc",
+        "loginAccount": "test_tony",
+        "loginPW": "tony123"
+    },
+    "viewportHeight" : 1000,
+    "viewportWidth" : 1280,
+    "pageLoadTimeout": 180000,
+    "responseTimeout": 180000,
+    "video":false
+}

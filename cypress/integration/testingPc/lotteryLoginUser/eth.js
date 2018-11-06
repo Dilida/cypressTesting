@@ -19,7 +19,7 @@ describe('以太坊彩投注页面投注验证', () => {
         if( apistatus === 1){
           expect(apistatus).to.eq(1);
           assert.isObject(result);
-          cy.visit(`pc${lotteryPage.url}`);
+          cy.visit(`pc${lotteryPage.url}`).wait(500);
           cy.getCookie('lotteryId').should('have.property','value', lotteryId.toString());
           cy.confirmTabList(lotteryPage.tabList);
           cy.clickTab(1,lotteryPage.tabList.length)

@@ -28,7 +28,7 @@ describe('广东快十投注页面投注验证', () => {
     it('广东快十投注，[可]看见趣味/任选/1-5名，趣味投注应成功且顯示投注紀錄', () => {
 
       if(userLogin.apistatus === 1){
-          cy.visit(`pc${lotteryPage.url}`);
+          cy.visit(`pc${lotteryPage.url}`).wait(500);
           cy.getCookie('lotteryId').should('have.property','value', lotteryId.toString());
           cy.confirmTabList(lotteryPage.tabList);
           cy.clickTab(1,1);
@@ -67,7 +67,7 @@ describe('广东快十投注页面投注验证', () => {
     })
     it('广东快十投注，[可]看见连码投注应成功且顯示投注紀錄', () => {
         if(userLogin.apistatus === 1){
-          cy.visit(`pc${lotteryPage.url}`);
+          cy.visit(`pc${lotteryPage.url}`).wait(500);
           cy.confirmTabList(lotteryPage.tabList);
           cy.clickTab(3,3);
           cy.isNeedtoBet()

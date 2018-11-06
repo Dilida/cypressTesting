@@ -50,7 +50,7 @@ describe('江西11选5投注页面投注验证', () => {
     it('江西11选5投注，[可]看见趣味/1-5球/连码，趣味投注应成功且顯示投注紀錄', () => {
       cy.confirmTabList(lotteryPage.tabList);
       cy.clickTab(1,2);
-      cy.isNeedtoBet()
+      cy.isNeedtoBet(lotteryHeader.now.prizeCloseTime)
         .fixture('betOrder').then((json)=>{
           if(json.couldBet){
             cy.betOrder();
@@ -61,7 +61,7 @@ describe('江西11选5投注页面投注验证', () => {
     })
     it('江西11选5投注，[可]看见任选投注应成功且顯示投注紀錄', () => {
       cy.clickTab(3,3);
-      cy.isNeedtoBet()
+      cy.isNeedtoBet(lotteryHeader.now.prizeCloseTime)
         .fixture('betOrder').then((json)=>{
           if(json.couldBet){
             cy.anyBet('lianBet10');

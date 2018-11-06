@@ -35,7 +35,7 @@ describe('台湾5分彩投注页面投注验证', () => {
     })
 
     it('台湾5分彩点击号码走势，[可]导致往期开奖页面', () => {
-      cy.get('.lottery-button-area > :nth-child(1) > .q-btn-inner').click()
+      cy.wait(500).get('.lottery-button-area > :nth-child(1) > .q-btn-inner').click()
         .moreLotteryHistory(lotteryId);
     })
 
@@ -51,7 +51,7 @@ describe('台湾5分彩投注页面投注验证', () => {
       cy.confirmTabList(lotteryPage.tabList);
       cy.get(`.bet-tags-wrap > .swiper-container > .swiper-wrapper > :nth-child(${Cypress._.random(1,lotteryPage.tabList.length)})`)
         .click()
-      cy.isNeedtoBet()
+      cy.isNeedtoBet(lotteryHeader.now.prizeCloseTime)
         .fixture('betOrder').then((json)=>{
           if(json.couldBet){
             cy.betOrder();

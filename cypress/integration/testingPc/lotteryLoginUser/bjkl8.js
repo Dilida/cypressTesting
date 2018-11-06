@@ -27,7 +27,7 @@ describe('北京快乐8投注页面投注验证', () => {
 
     it('北京快乐8投注，[可]看见趣味/任选，趣味投注应成功且顯示投注紀錄', () => {
         if(userLogin.apistatus === 1){
-          cy.visit(`pc${lotteryPage.url}`);
+          cy.visit(`pc${lotteryPage.url}`).wait(500);
           cy.getCookie('lotteryId').should('have.property','value', lotteryId.toString());
           cy.confirmTabList(lotteryPage.tabList);
           cy.clickTab(1,1);
@@ -49,7 +49,7 @@ describe('北京快乐8投注页面投注验证', () => {
     })
     it('北京快乐8投注，[可]看见趣味/任选，任选投注应成功且顯示投注紀錄', () => {
       if(userLogin.apistatus === 1){
-          cy.visit(`pc${lotteryPage.url}`);
+          cy.visit(`pc${lotteryPage.url}`).wait(500);
           cy.confirmTabList(lotteryPage.tabList);
           cy.clickTab(2,2);
           cy.isNeedtoBet()

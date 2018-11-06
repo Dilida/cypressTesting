@@ -2,12 +2,17 @@
     "scripts": {
         "cypress:run": "cypress run",
         "cypress:open": "cypress open",
-        "cy": "cypress open --env configFile=blcMobile",
-        "cyBlc": "cypress open --env configFile=blc",
-        "cySsc": "cypress open --env configFile=ssc",
-        "pcHome": "cypress run --spec 'cypress/integration/testingPc/*'"
+        "mBlcProd": "cypress open --env configFile=blcMobileProd",
+        "mBlcStage": "cypress open --env configFile=blcMobileStage",
+        "pcSscProd": "cypress open --env configFile=sscProd",
+        "pcSscStage": "cypress open --env configFile=sscStage",
+        "pcDemoUserLotteryStage": "cypress run --env configFile=blcStage --spec 'cypress/integration/testingPc/lotteryDemoUser/*'",
+        "pcDemoUserLotteryProd": "cypress run --env configFile=blcProd --spec 'cypress/integration/testingPc/lotteryDemoUser/*'",
+        "pcBlcProd": "cypress open --env configFile=blcProd",
+        "pcBlcStage": "cypress open --env configFile=blcStage"
     },
     "dependencies": {
-        "cypress": "^3.1.0"
+        "cypress": "^3.1.0",
+        "tesseract.js": "^1.0.10"
     }
 }

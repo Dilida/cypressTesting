@@ -34,7 +34,7 @@ function getConfigurationByFile(file) {
 // plugins file
 module.exports = (on, config) => {
   // accept a configFile value or use development by default
-  const file = config.env.configFile || 'ssc'
+  const file = config.env.configFile || 'sscStage'
 
   return getConfigurationByFile(file)
 }

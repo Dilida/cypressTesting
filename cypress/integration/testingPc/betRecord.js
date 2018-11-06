@@ -24,10 +24,10 @@ describe('个人中心-投注记录', () => {
     it('个人中心-投注记录，今日统计数据比对', () => {
       cy.wait('@todayCount').then((response) => {
         let todayCount = confirmAPI(response);
-        cy.get('.account-manage-info__item:nth-child(2)').contains(todayCount.sumBetAmount ? roundAmt(todayCount.sumBetAmount) : 0);
-        cy.get('.account-manage-info__item:nth-child(3)').contains(todayCount.sumPayoff ? roundAmt(todayCount.sumPayoff) : 0);
-        cy.get('.account-manage-info__item:nth-child(4)').contains(todayCount.sumBetAmount ? roundAmt(todayCount.sumBackAmount) : 0);
-        cy.get('.account-manage-info__item:nth-child(5)').contains(todayCount.profitAmount ? roundAmt(todayCount.profitAmount) : 0);
+        cy.get('.account-manage-info__item:nth-child(2)').contains(todayCount.sumBetAmount && todayCount.sumBetAmount !== 0 ? roundAmt(todayCount.sumBetAmount) : 0);
+        cy.get('.account-manage-info__item:nth-child(3)').contains(todayCount.sumBetAmount && todayCount.sumPayoff !== 0 ? roundAmt(todayCount.sumPayoff) : 0);
+        cy.get('.account-manage-info__item:nth-child(4)').contains(todayCount.sumBetAmount && todayCount.sumBetAmount !== 0 ? roundAmt(todayCount.sumBackAmount) : 0);
+        cy.get('.account-manage-info__item:nth-child(5)').contains(todayCount.sumBetAmount && todayCount.profitAmount !== 0 ? roundAmt(todayCount.profitAmount) : 0);
       })
     })
 

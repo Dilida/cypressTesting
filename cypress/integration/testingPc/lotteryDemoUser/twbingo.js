@@ -50,7 +50,7 @@ describe('台湾宾果投注页面投注验证', () => {
     it('台湾宾果投注，[可]看见趣味/任选，趣味投注应成功且顯示投注紀錄', () => {
       cy.confirmTabList(lotteryPage.tabList);
       cy.clickTab(1,1);
-      cy.isNeedtoBet()
+      cy.isNeedtoBet(lotteryHeader.now.prizeCloseTime)
         .fixture('betOrder').then((json)=>{
           if(json.couldBet){
             cy.betOrder();
@@ -62,7 +62,7 @@ describe('台湾宾果投注页面投注验证', () => {
     it('台湾宾果投注，[可]看见趣味/任选，任选投注应成功且顯示投注紀錄', () => {
       cy.confirmTabList(lotteryPage.tabList);
       cy.clickTab(2,2);
-      cy.isNeedtoBet()
+      cy.isNeedtoBet(lotteryHeader.now.prizeCloseTime)
         .fixture('betOrder').then((json)=>{
           if(json.couldBet){
             cy.anyBet('anyBet5');

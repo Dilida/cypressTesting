@@ -51,7 +51,7 @@ describe('拉特比投注页面投注验证', () => {
       cy.confirmTabList(lotteryPage.tabList);
       cy.get(`.bet-tags-wrap > .swiper-container > .swiper-wrapper > :nth-child(${Cypress._.random(1,lotteryPage.tabList.length)})`)
         .click()
-      cy.isNeedtoBet()
+      cy.isNeedtoBet(lotteryHeader.now.prizeCloseTime)
         .fixture('betOrder').then((json)=>{
           if(json.couldBet){
             cy.betOrder();

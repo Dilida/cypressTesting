@@ -50,7 +50,7 @@ describe('广东快十投注页面投注验证', () => {
     it('广东快十投注，[可]看见趣味/任选/1-5名，趣味投注应成功且顯示投注紀錄', () => {
       cy.confirmTabList(lotteryPage.tabList);
       cy.clickTab(1,1);
-      cy.isNeedtoBet()
+      cy.isNeedtoBet(lotteryHeader.now.prizeCloseTime)
         .fixture('betOrder').then((json)=>{
           if(json.couldBet){
             cy.betOrder();
@@ -61,7 +61,7 @@ describe('广东快十投注页面投注验证', () => {
     })
     it('广东快十投注，[可]看见任选投注应成功且顯示投注紀錄', () => {
       cy.clickTab(2,2);
-      cy.isNeedtoBet()
+      cy.isNeedtoBet(lotteryHeader.now.prizeCloseTime)
         .fixture('betOrder').then((json)=>{
           if(json.couldBet){
             cy.anyBet('anyBet4');
@@ -72,7 +72,7 @@ describe('广东快十投注页面投注验证', () => {
     })
     it('广东快十投注，[可]看见连码投注应成功且顯示投注紀錄', () => {
       cy.clickTab(3,3);
-      cy.isNeedtoBet()
+      cy.isNeedtoBet(lotteryHeader.now.prizeCloseTime)
         .fixture('betOrder').then((json)=>{
           if(json.couldBet){
             cy.lianBet('lianBet4');

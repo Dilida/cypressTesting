@@ -52,8 +52,8 @@ describe('个人中心-账户管理', () => {
 
   context('个人中心-密码管理，可修改登入及取款密码', () => {
     let loginPassword;
-    let passwordOld = 'aa123456';
-    let passwordNew = '11111111';
+    let passwordOld = 'tony123';
+    let passwordNew = 'tony111';
     let payPasswordOld = '1234';
     let payPasswordNew = '1111';
 

@@ -2,12 +2,19 @@
 import {
     confirmAPI, lotteryConst,
   } from '../support/utility.js'
+import Tesseract from 'tesseract.js'
 
 Cypress.Commands.add('LoginFirstPop', () => {
   cy.get('.modal--free > .modal-content').should('be.visible')
   .get('.modal--free > .modal-content > .modal__header > .q-btn > .q-btn-inner > .q-icon').click().end()
 })
 
+Cypress.Commands.add('ocrCode', (codeImg) => {
+  return new Cypress.Promise((resolve, reject) => {
+    Tesseract.recognize(`data:image/png;base64,${codeImg}`)
+    .then((result) => resolve(result.text.trim()));
+  })
+})
 
 Cypress.Commands.add('demoLogin', () => {
     cy.request({ //demologin api
@@ -66,11 +73,17 @@ Cypress.Commands.add('demoLogintoLottery', (lotteryId, lotteryPage) => {
       cy.getCookie('lotteryId').should('have.property','value', lotteryId.toString());
     })
 })
-Cypress.Commands.add('demoLogin', ()=>{
+Cypress.Commands.add('index_demoLogin', ()=>{
   // 在首页登入后停留在原本的首页
-  cy.get(' div.login-bar-wrap > div:nth-child(4)>button:nth-child(3)').click()
-    .wait(500); //點擊遊客登入
-  cy.get('div.modal--lobbypop div.modal__header button').click();
+  // 註 有時候 Cypress 會 整塊 Header 消失抓不到，重跑即可
+  if (!Cypress.$('.login-bar-loged').length) {
+    cy.get(' div.login-bar-wrap > div:nth-child(4)>button:nth-child(3)').click()
+      .wait(500); //點擊遊客登入
+      if (Cypress.$('lobby-post.flex-center:visible').length !== 0) {
+        cy.get('div.modal--lobbypop div.modal__header button').click();
+      }
+  }
+
 })
 
 
@@ -81,21 +94,13 @@ Cypress.Commands.add('memberPage', (pageUrl) => {
   cy.visitPage();
   cy.wait('@code').then((response) => {
     const code = confirmAPI(response);
-    const body = {
-      "apiKey":"d4bcc79d9888957",
-      "base64Image":`data:image/png;base64,${code.code}`,
-    }
-    cy.request({
-      method: 'POST',
-      url: 'https://api.ocr.space/parse/image',
-      form: true,
-      body,
-    }).then((res) => {
-      const codeText= res.body.ParsedResults[0].ParsedText.replace(/[a-zA-Z]|[\s]/g, '');
-      cy.get('.q-list > :nth-child(1) > .q-field > :nth-child(1) > .q-field-content > .q-if > .q-if-inner > .col').type('double');
-      cy.get('.q-list > :nth-child(2) > .q-field > :nth-child(1) > .q-field-content > .q-if > .q-if-inner > .col').type('aa123456');
-      cy.get('.q-list > :nth-child(3) > .q-field > :nth-child(1) > .q-field-content > .q-if > .q-if-inner > .col').type(codeText? codeText: 1111);
-      cy.get(':nth-child(4) > .btn-primary').click().end()
+    cy.wrap(null).then(() => {
+      return cy.ocrCode(code.code).then((response)=> {
+        cy.get('.q-list > :nth-child(3) > .q-field > :nth-child(1) > .q-field-content > .q-if > .q-if-inner > .col').type(response? response: 1111);
+        cy.get('.q-list > :nth-child(1) > .q-field > :nth-child(1) > .q-field-content > .q-if > .q-if-inner > .col').type(Cypress.env("loginAccount"));
+        cy.get('.q-list > :nth-child(2) > .q-field > :nth-child(1) > .q-field-content > .q-if > .q-if-inner > .col').type(Cypress.env("loginPW"));
+        cy.get(':nth-child(4) > .btn-primary').click().end()
+      })
     })
     cy.wait('@userLogin').then((response)=>{
       const {apistatus, result} = response.response.body;
@@ -121,21 +126,13 @@ Cypress.Commands.add('userLogintoLottery', (lotteryId, lotteryPage) => {
   cy.visitPage();
   cy.wait('@code').then((response) => {
     const code = confirmAPI(response);
-    const body = {
-      "apiKey":"d4bcc79d9888957",
-      "base64Image":`data:image/png;base64,${code.code}`,
-    }
-    cy.request({
-      method: 'POST',
-      url: 'https://api.ocr.space/parse/image',
-      form: true,
-      body,
-    }).then((res) => {
-      const codeText= res.body.ParsedResults[0].ParsedText.replace(/[a-zA-Z]|[\s]/g, '');
-      cy.get('.q-list > :nth-child(1) > .q-field > :nth-child(1) > .q-field-content > .q-if > .q-if-inner > .col').type('ddtest01');
-      cy.get('.q-list > :nth-child(2) > .q-field > :nth-child(1) > .q-field-content > .q-if > .q-if-inner > .col').type('abc1234');
-      cy.get('.q-list > :nth-child(3) > .q-field > :nth-child(1) > .q-field-content > .q-if > .q-if-inner > .col').type(codeText? codeText: 1111);
-      cy.get(':nth-child(4) > .btn-primary').click().end()
+    cy.wrap(null).then(() => {
+      return cy.ocrCode(code.code).then((response)=> {
+        cy.get('.q-list > :nth-child(3) > .q-field > :nth-child(1) > .q-field-content > .q-if > .q-if-inner > .col').type(response? response: 1111);
+        cy.get('.q-list > :nth-child(1) > .q-field > :nth-child(1) > .q-field-content > .q-if > .q-if-inner > .col').type(Cypress.env("loginAccount"));
+        cy.get('.q-list > :nth-child(2) > .q-field > :nth-child(1) > .q-field-content > .q-if > .q-if-inner > .col').type(Cypress.env("loginPW"));
+        cy.get(':nth-child(4) > .btn-primary').click().end()
+      })
     })
   })
 })
@@ -155,8 +152,14 @@ Cypress.Commands.add('lotteryHeaderFunc', (lotteryHeader) => {
   cy.get('.lottery-award-history > .col-12').contains(lotteryHeader.pre.winNumber.split(',')[0]);
   cy.get('.double-row').contains(lotteryHeader.pre.doubleData[0]);
 
-  const nowIssueAlias = (lotteryHeader.now.endTime < Date.now()) ? lotteryHeader.next.issueAlias : lotteryHeader.now.issueAlias
-  cy.get('.lottery-countdown > .text-strong > .text-important').contains(nowIssueAlias);
+  let nowIssueAlias = (lotteryHeader.now.endTime < Date.now()) ? lotteryHeader.next.issueAlias : lotteryHeader.now.issueAlias
+  cy.get('body').then(($body) => {
+    if($body.text().includes('已封盘')){
+      nowIssueAlias = lotteryHeader.now.issueAlias;
+      cy.wait(500);
+    }
+    cy.get('.lottery-countdown > .text-strong > .text-important').contains(nowIssueAlias);
+  })
   if(lotteryConst.blockChainList.includes(lotteryHeader.lotteryId)) {
     cy.get('.pastview-blockchain').contains(lotteryHeader.pre.block);
   }
@@ -309,7 +312,13 @@ Cypress.Commands.add('betOrderInput', () => {
   }).end();
 })
 
-Cypress.Commands.add('isNeedtoBet', () => {
+Cypress.Commands.add('isNeedtoBet', (prizeCloseTime) => {
+  const nowTime =Date.now();
+  let waitTime = 0;
+  if(nowTime - prizeCloseTime < 10000) {
+    waitTime = nowTime - prizeCloseTime;
+  }
+  cy.wait(waitTime);
   cy.get('body').then(($body) => {
     let allowBet = true;
     if($body.text().includes('未开盘')){
